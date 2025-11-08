@@ -1,19 +1,21 @@
 import express from 'express';
+import 'dotenv/config.js';
+import bookRoutes from './router/BookRoutes.js';
+import studentRoutes from './router/StudentRouter.js';
 
 const app = express();
 
 app.use(express.json());
 
-const port = 5000;
 
 try {
-    app.listen(port, () => {
-        console.log('Listening to port 4500...');
+    app.listen(process.env.PORT || 5000, () => {
+      console.log(`listening to port ${process.env.PORT || 5000}`);
     });
 }catch (e) {
     console.log(e);
 }
 
-app.get('/chaw', async (request, response) => {
-    response.status(200).json({message: "Hello Im Chaw"});
-});
+app.use('/book',bookRoutes);
+app.use('/students',studentRoutes);
+
