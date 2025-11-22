@@ -56,5 +56,17 @@ const error = new Error(
 error.statusCode = 400;
 throw erroe;
 }
+if (!bcrypt.compareSync(password, user[0].password)){
+const error = new Error ('Incorrect Password.');
+error.statusCode = 400;
+throw error;
 }
-"
+
+const token = jwt.sign(
+{id: user[0].id},
+proces.env.SECRET,
+{expiresIn: '1d'});
+return token;
+
+
+}
