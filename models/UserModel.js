@@ -42,3 +42,19 @@ export const createUser = async (name, email, password) => {
     );
     return newUser;
 }
+
+export const login = async (email, password) => {
+if (email.trim() === ''|| password.trim() === ''){const error = new Error ('Email and password is required.')
+throw error;
+}
+
+const [user] = await pool.query(
+"SELECT * FROM tbluser WHERE email = ?", [email]);
+if (user.length === 0){
+const error = new Error(
+`An account with the email: $(email) does not exist.`)
+error.statusCode = 400;
+throw erroe;
+}
+}
+"
