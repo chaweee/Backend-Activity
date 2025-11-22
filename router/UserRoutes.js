@@ -3,7 +3,10 @@ import express from 'express';
 
 const UserRoutes = express.Router();
 
-UserRoutes.get('/all', 
-UserController.fetchUser); 
+UserRoutes.post('/register', 
+UserController.register); 
+UserRoutes.post('/login', 
+UserController.login); 
 
-export default UserRoutes;
+
+export default userRoutes;
