@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config.js';
 import bookRoutes from './router/BookRoutes.js';
 import studentRoutes from './router/StudentRouter.js';
+import UserRoutes from './router/UserRoutes.js;
 
 const app = express();
 
@@ -18,4 +19,4 @@ try {
 
 app.use('/book',bookRoutes);
 app.use('/students',studentRoutes);
-
+app.use('/user' , userRoutes);
