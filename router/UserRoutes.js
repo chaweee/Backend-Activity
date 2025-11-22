@@ -9,4 +9,4 @@ UserRoutes.post('/login',
 UserController.login); 
 
 
-export default userRoutes;
+export default UserRoutes;
