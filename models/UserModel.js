@@ -1,6 +1,7 @@
 import pool from '../config/db.js';
 import validator from "validator";
 import bcrypt from "bcryptjs";
+import JsonWebTokenError from "jsonwebtoken";
 
 export const createUser = async (name, email, password) => {
     if(name.trim() === ''||
@@ -26,7 +27,7 @@ export const createUser = async (name, email, password) => {
     }
 
     const [user] = await pool.query(
-        "SELECT email FROM user WHERE email = ?", [email]);
+        "SELECT email FROM tbluser WHERE email = ?", [email]);
 
     if(user.length === 1){
         const error = new Error('The Email ${email} is already used.')
@@ -44,29 +45,44 @@ export const createUser = async (name, email, password) => {
 }
 
 export const login = async (email, password) => {
-if (email.trim() === ''|| password.trim() === ''){const error = new Error ('Email and password is required.')
-throw error;
+    if(email.trim() === ''|| password.trim() === ''){
+        const error =  new Error('Email and password is required.')
+        error.statusCode = 400;
+        throw error;  
+    }
+
+    const [user] = await pool.query(
+        "SELECT * FROM tbluser WHERE email = ?", [email]);
+    if (user.length === 0){
+        const error = new Error(
+            `An account with the email: ${email} does not exist.`);
+            error.statusCode = 400;
+            throw error;
+    }
+
+    if (!bcrypt.compareSync(password, user[0].password)){
+        const error = new Error('Incorrect password.');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const token = JsonWebTokenError.sign(
+        {id: user[0].id},
+        process.env.SECRET,
+        {expiresIn: '1d'});
+
+    return token;
 }
 
-const [user] = await pool.query(
-"SELECT * FROM tbluser WHERE email = ?", [email]);
-if (user.length === 0){
-const error = new Error(
-`An account with the email: $(email) does not exist.`)
-error.statusCode = 400;
-throw erroe;
-}
-if (!bcrypt.compareSync(password, user[0].password)){
-const error = new Error ('Incorrect Password.');
-error.statusCode = 400;
-throw error;
+export const getUser = async (id) =>{
+    if(parseInt(id) === NaN){
+        throw new Error('Invalid id')
+    }
+
+    const [user] = await pool.query('SELECT * FROM tbluser WHERE id = ?', [id]);
+    console.log(user)
+    return user;
 }
 
-const token = jwt.sign(
-{id: user[0].id},
-proces.env.SECRET,
-{expiresIn: '1d'});
-return token;
 
-
-}
+            
