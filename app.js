@@ -1,22 +1,34 @@
-import express from 'express';
+import express from "express";
 import 'dotenv/config.js';
-import bookRoutes from './router/BookRoutes.js';
-import studentRoutes from './router/StudentRouter.js';
-import UserRoutes from './router/UserRoutes.js;
+import cors from 'cors';
+import UserRoutes from "./routers/UserRoutes.js";
+import bookRoutes from "./routers/BookRoutes.js";
+import studentRoutes from "./routers/StudentRoutes.js";
 
+// create express app
 const app = express();
+let corsOptions = {
+    origin : process.env.ORIGIN
+};
 
+// middleware
 app.use(express.json());
+app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+    console.log(req.path, req.method);
+    next();
+});
+
+app.use('/books', bookRoutes);
+app.use('/students', studentRoutes);
+app.use('/users', UserRoutes);
 
 
 try {
-    app.listen(process.env.PORT || 5000, () => {
-      console.log(`listening to port ${process.env.PORT || 5000}`);
+    app.listen(process.env.PORT || 3000, () => {
+        console.log(`Listening on port ${process.env.PORT || 3000}...`);
     });
-}catch (e) {
+} catch (e) {
     console.log(e);
 }
-
-app.use('/book',bookRoutes);
-app.use('/students',studentRoutes);
-app.use('/user' , userRoutes);
